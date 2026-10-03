@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>تحدي أبطال جدول الضرب - مدرسة الوجيز النموذجية</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:'Tajawal',sans-serif;
+    background:#0f172a;
+    overflow:hidden;
+    touch-action:manipulation;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+button{
+    font-family:'Tajawal',sans-serif;
+}
+
+.game-bg{
+    background:
+    linear-gradient(
+        to bottom,
+        #38bdf8 0%,
+        #7dd3fc 55%,
+        #bae6fd 70%,
+        #86efac 70%,
+        #4ade80 100%
+    );
+}
+
+.key{
+    background:#f8fafc;
+    color:#0f172a;
+    border:2px solid #cbd5e1;
+    border-bottom:5px solid #94a3b8;
+    transition:.1s;
+}
+
+.key:active{
+    transform:translateY(4px);
+    border-bottom-width:2px;
+}
+
+.hidden{
+    display:none !important;
+}
+
+.pulse{
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.06);}
+}
+
+.shake{
+    animation:shake .35s;
+}
+
+@keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-8px);}
+    75%{transform:translateX(8px);}
+}
+
+.confetti{
+    position:absolute;
+    width:10px;
+    height:18px;
+    top:-30px;
+    animation:fall 3s linear forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh) rotate(720deg);
+        opacity:0;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="w-full h-screen flex items-center justify-center p-2">
+
+<div id="gameContainer"
+class="relative w-full max-w-5xl h-[96vh] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-400">
+
+<!-- ================= TOP BAR ================= -->
+
+<div class="absolute top-0 left-0 right-0 z-20
+bg-slate-950/90 backdrop-blur
+px-3 py-2 flex items-center justify-between">
+
+<div class="flex items-center gap-2">
+
+<button id="soundButton"
+class="bg-amber-400 text-slate-900 rounded-xl px-3 py-2 font-bold">
+🔊
+</button>
+
+<div class="text-xs md:text-sm">
+<span id="playerDisplay" class="text-amber-400 font-black">
+البطل/ة
+</span>
+
+<span class="text-slate-400">
+| الصف الرابع
+</span>
+</div>
+
+</div>
+
+<div class="flex gap-2 text-xs md:text-sm font-bold">
+
+<div class="bg-slate-800 border border-amber-400/40
+rounded-xl px-3 py-2">
+
+⭐
+<span id="starsDisplay" class="text-amber-400">
+0
+</span>
+
+</div>
+
+<div class="bg-slate-800 border border-indigo-400/40
+rounded-xl px-3 py-2">
+
+🎯
+<span id="questionDisplay" class="text-indigo-300">
+0
+</span>
+/15
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= GAME CANVAS ================= -->
+
+<div class="absolute inset-0 pt-12">
+
+<canvas id="gameCanvas"
+class="game-bg w-full h-full">
+</canvas>
+
+</div>
+
+
+<!-- ================= MOBILE CONTROLS ================= -->
+
+<div id="mobileControls"
+class="absolute bottom-4 left-3 right-3 z-20 flex justify-between items-end">
+
+<div class="flex gap-2">
+
+<button id="leftBtn"
+class="w-14 h-14 md:w-16 md:h-16
+bg-slate-900/85 text-white
+border-2 border-amber-400
+rounded-2xl text-2xl">
+⬅️
+</button>
+
+<button id="rightBtn"
+class="w-14 h-14 md:w-16 md:h-16
+bg-slate-900/85 text-white
+border-2 border-amber-400
+rounded-2xl text-2xl">
+➡️
+</button>
+
+</div>
+
+<button id="jumpBtn"
+class="w-16 h-16 md:w-20 md:h-20
+bg-amber-400 text-slate-900
+border-2 border-amber-200
+rounded-2xl text-3xl">
+🦘
+</button>
+
+</div>
+
+
+<!-- ================= START SCREEN ================= -->
+
+<div id="startScreen"
+class="absolute inset-0 z-50
+bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950
+flex flex-col justify-center items-center
+p-5 text-center overflow-y-auto">
+
+<div class="mb-3">
+
+<div class="inline-block
+bg-amber-400/15
+border border-amber-400/40
+text-amber-300
+px-4 py-2
+rounded-full
+text-xs md:text-sm
+font-bold">
+
+🏫 مدرسة الوجيز النموذجية
+
+</div>
+
+<h1 class="text-3xl md:text-5xl
+font-black text-amber-400 mt-4">
+
+🏆 تحدي أبطال جدول الضرب 🏆
+
+</h1>
+
+<p class="text-indigo-200 mt-2">
+الصف الرابع الابتدائي
+</p>
+
+</div>
+
+
+<div class="w-full max-w-md">
+
+<label class="block text-right
+text-amber-300 font-bold mb-2">
+
+اكتب اسمك يا بطل:
+
+</label>
+
+<input
+id="nameInput"
+type="text"
+placeholder="أدخل اسم الطالب/ة"
+class="w-full
+bg-slate-800
+border-2 border-amber-400
+rounded-2xl
+px-4 py-3
+text-center text-white
+font-bold
+outline-none"
+/>
+
+</div>
+
+
+<div class="w-full max-w-lg
+bg-slate-800/80
+border border-indigo-500/50
+rounded-3xl
+p-4 mt-5
+text-right">
+
+<h2 class="text-center text-amber-300
+font-black mb-3">
+
+🎮 طريقة اللعب
+
+</h2>
+
+<div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
+
+<div class="bg-slate-900 rounded-xl p-3">
+🏃‍♂️ <b class="text-amber-400">التحرك</b>
+<br>
+⬅️ ➡️ أو أزرار اللمس
+</div>
+
+<div class="bg-slate-900 rounded-xl p-3">
+🦘 <b class="text-amber-400">القفز</b>
+<br>
+⬆️ أو زر القفز
+</div>
+
+</div>
+
+<div class="text-slate-300 text-xs md:text-sm mt-3 space-y-2">
+
+<p>⭐ اجمع النجوم أثناء المغامرة.</p>
+
+<p>🚧 عند مواجهة العقبة سيظهر سؤال جدول ضرب.</p>
+
+<p>✍️ اكتب الإجابة بنفسك دون اختيارات.</p>
+
+<p>🎯 أكمل <b class="text-amber-400">15 سؤالًا</b>.</p>
+
+<p>🏆 عند الانتهاء ستظهر نتيجتك من 15.</p>
+
+</div>
+
+</div>
+
+
+<button id="startButton"
+class="mt-5
+w-full max-w-md
+py-4
+rounded-2xl
+bg-gradient-to-r from-amber-400 to-orange-500
+text-slate-950
+font-black
+text-xl
+shadow-lg
+border-b-4 border-orange-700
+pulse">
+
+🚀 ابدأ اللعبة الآن
+
+</button>
+
+</div>
+
+
+<!-- ================= QUESTION MODAL ================= -->
+
+<div id="questionModal"
+class="hidden absolute inset-0 z-60
+bg-slate-950/85
+backdrop-blur-md
+flex items-center justify-center
+p-4">
+
+<div id="questionBox"
+class="bg-slate-900
+border-4 border-amber-400
+rounded-3xl
+p-5
+w-full max-w-sm
+text-center
+shadow-2xl">
+
+<div class="text-sm
+bg-amber-400/10
+text-amber-300
+border border-amber-400/30
+rounded-xl
+py-2 mb-4">
+
+🚧 عقبة أمامك!
+<br>
+حل السؤال لفتح الطريق
+
+</div>
+
+
+<div id="questionText"
+class="bg-slate-800
+border border-slate-700
+rounded-2xl
+py-4
+text-4xl
+font-black
+tracking-widest">
+
+6 × 7 = ?
+
+</div>
+
+
+<div id="answerDisplay"
+class="mt-4
+min-h-[58px]
+bg-slate-950
+border-2 border-indigo-500
+rounded-xl
+flex items-center justify-center
+text-3xl
+font-black
+text-amber-300">
+
+</div>
+
+
+<div class="grid grid-cols-3 gap-2 mt-4">
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('1')">1</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('2')">2</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('3')">3</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('4')">4</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('5')">5</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('6')">6</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('7')">7</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('8')">8</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('9')">9</button>
+
+<button
+onclick="clearAnswer()"
+class="rounded-xl p-3
+bg-rose-500
+text-white
+font-black">
+
+مسح
+
+</button>
+
+<button class="key rounded-xl p-3 text-xl font-black"
+onclick="addNumber('0')">0</button>
+
+<button
+onclick="checkAnswer()"
+class="rounded-xl p-3
+bg-emerald-500
+text-white
+font-black">
+
+تأكيد
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= VICTORY ================= -->
+
+<div id="victoryModal"
+class="hidden absolute inset-0 z-70
+bg-indigo-950/95
+backdrop-blur-md
+flex items-center justify-center
+p-4 text-center">
+
+<div class="bg-slate-900
+border-4 border-amber-400
+rounded-3xl
+p-6
+w-full max-w-md
+shadow-2xl">
+
+<div class="text-6xl mb-3">
+🏆
+</div>
+
+<h2 class="text-3xl md:text-4xl
+font-black text-amber-400">
+
+مبارك الفوز! 🎉
+
+</h2>
+
+<p class="text-slate-300 mt-3">
+أتممت جميع أسئلة التحدي!
+</p>
+
+
+<div class="mt-5
+bg-slate-800
+rounded-2xl
+p-5">
+
+<p class="text-slate-300">
+👨‍🎓 الطالب/ة
+</p>
+
+<p id="finalName"
+class="text-amber-400
+text-xl
+font-black
+mt-1">
+
+</p>
+
+<div class="my-4 h-px bg-slate-700"></div>
+
+<p class="text-slate-300">
+🎯 النتيجة
+</p>
+
+<p class="text-5xl
+font-black
+text-emerald-400
+mt-2">
+
+<span id="finalScore">15</span>
+<span class="text-2xl">/15</span>
+
+</p>
+
+<p class="mt-4 text-amber-300">
+⭐ النجوم:
+<span id="finalStars">0</span>
+</p>
+
+</div>
+
+
+<button
+onclick="restartGame()"
+class="w-full
+mt-5
+py-4
+rounded-2xl
+bg-gradient-to-r
+from-amber-400
+to-orange-500
+text-slate-950
+font-black
+text-lg">
+
+🔄 إعادة المحاولة
+
+</button>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let audioContext = null;
+let soundEnabled = true;
+
+function initAudio(){
+
+    if(!audioContext){
+
+        audioContext =
+        new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+    }
+
+    if(audioContext.state === 'suspended'){
+        audioContext.resume();
+    }
+}
+
+
+function tone(
+    frequency,
+    duration = 0.15,
+    type = 'sine',
+    volume = 0.08
+){
+
+    if(!soundEnabled) return;
+
+    try{
+
+        initAudio();
+
+        const oscillator =
+        audioContext.createOscillator();
+
+        const gain =
+        audioContext.createGain();
+
+        oscillator.type = type;
+
+        oscillator.frequency.setValueAtTime(
+            frequency,
+            audioContext.currentTime
+        );
+
+        gain.gain.setValueAtTime(
+            volume,
+            audioContext.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + duration
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            audioContext.currentTime + duration
+        );
+
+    }catch(e){}
+
+}
+
+
+/* صوت الإجابة الصحيحة */
+
+function correctSound(){
+
+    tone(523,0.12,'sine',0.1);
+
+    setTimeout(()=>{
+        tone(659,0.12,'sine',0.1);
+    },100);
+
+    setTimeout(()=>{
+        tone(784,0.2,'sine',0.12);
+    },200);
+
+}
+
+
+/* صوت الخطأ */
+
+function wrongSound(){
+
+    tone(180,0.25,'sawtooth',0.08);
+
+}
+
+
+/* صوت النجمة */
+
+function starSound(){
+
+    tone(880,0.1,'sine',0.08);
+
+}
+
+
+/* صوت الفوز الحماسي */
+
+function victorySound(){
+
+    if(!soundEnabled) return;
+
+    initAudio();
+
+    const notes = [
+        523,659,784,1046,
+        784,1046,1318,
+        1046,1318,1568
+    ];
+
+    notes.forEach((note,i)=>{
+
+        setTimeout(()=>{
+            tone(
+                note,
+                0.22,
+                'square',
+                0.12
+            );
+        },i*140);
+
+    });
+
+}
+
+
+/* =========================================================
+   GAME VARIABLES
+========================================================= */
+
+const canvas =
+document.getElementById('gameCanvas');
+
+const ctx =
+canvas.getContext('2d');
+
+
+let playerName = "البطل/ة";
+
+let starsCollected = 0;
+
+let currentQuestion = 0;
+
+let currentAnswer = "";
+
+let gameStarted = false;
+
+let gameFinished = false;
+
+let cameraX = 0;
+
+let score = 0;
+
+const TOTAL = 15;
+
+const worldWidth = 6500;
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player = {
+
+    x:120,
+
+    y:0,
+
+    width:38,
+
+    height:52,
+
+    vx:0,
+
+    vy:0,
+
+    speed:5,
+
+    jump:-12,
+
+    gravity:0.55,
+
+    grounded:false
+
+};
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+const keys = {
+
+    left:false,
+
+    right:false,
+
+    jump:false
+
+};
+
+
+window.addEventListener(
+'keydown',
+function(e){
+
+    if(e.key === 'ArrowLeft'){
+        keys.left = true;
+    }
+
+    if(e.key === 'ArrowRight'){
+        keys.right = true;
+    }
+
+    if(
+        e.key === 'ArrowUp' ||
+        e.key === ' '
+    ){
+        keys.jump = true;
+        e.preventDefault();
+    }
+
+});
+
+
+window.addEventListener(
+'keyup',
+function(e){
+
+    if(e.key === 'ArrowLeft'){
+        keys.left = false;
+    }
+
+    if(e.key === 'ArrowRight'){
+        keys.right = false;
+    }
+
+    if(
+        e.key === 'ArrowUp' ||
+        e.key === ' '
+    ){
+        keys.jump = false;
+    }
+
+});
+
+
+/* =========================================================
+   MOBILE BUTTONS
+========================================================= */
+
+function holdButton(button, key){
+
+    button.addEventListener(
+        'pointerdown',
+        e=>{
+            e.preventDefault();
+            keys[key]=true;
+        }
+    );
+
+    button.addEventListener(
+        'pointerup',
+        e=>{
+            e.preventDefault();
+            keys[key]=false;
+        }
+    );
+
+    button.addEventListener(
+        'pointerleave',
+        ()=>{
+            keys[key]=false;
+        }
+    );
+
+    button.addEventListener(
+        'pointercancel',
+        ()=>{
+            keys[key]=false;
+        }
+    );
+
+}
+
+
+holdButton(
+document.getElementById('leftBtn'),
+'left'
+);
+
+holdButton(
+document.getElementById('rightBtn'),
+'right'
+);
+
+document.getElementById('jumpBtn')
+.addEventListener(
+'pointerdown',
+function(e){
+
+    e.preventDefault();
+
+    jumpPlayer();
+
+});
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+/*
+
+   الجدول المستخدم من 0 إلى 10.
+
+   لا يوجد 11 × 11.
+
+   الأسئلة كلها مناسبة للمراجعة.
+
+*/
+
+function createQuestions(){
+
+    return [
+
+        {a:0,b:7},
+
+        {a:3,b:4},
+
+        {a:5,b:0},
+
+        {a:6,b:7},
+
+        {a:8,b:3},
+
+        {a:9,b:2},
+
+        {a:4,b:6},
+
+        {a:7,b:5},
+
+        {a:10,b:4},
+
+        {a:2,b:9},
+
+        {a:8,b:7},
+
+        {a:5,b:6},
+
+        {a:9,b:5},
+
+        {a:7,b:8},
+
+        {a:10,b:9}
+
+    ];
+
+}
+
+
+let questions = [];
+
+
+/* =========================================================
+   OBSTACLES
+========================================================= */
+
+let obstacles = [];
+
+let stars = [];
+
+
+function createWorld(){
+
+    obstacles = [];
+
+    stars = [];
+
+    questions = createQuestions();
+
+    const spacing =
+    (worldWidth - 700) / TOTAL;
+
+
+    for(let i=0;i<TOTAL;i++){
+
+        const x =
+        500 + i * spacing;
+
+
+        obstacles.push({
+
+            x:x,
+
+            width:45,
+
+            height:125,
+
+            solved:false,
+
+            questionIndex:i
+
+        });
+
+
+        stars.push({
+
+            x:x-100,
+
+            collected:false,
+
+            yOffset:70
+
+        });
+
+
+        stars.push({
+
+            x:x-30,
+
+            collected:false,
+
+            yOffset:125
+
+        });
+
+
+        stars.push({
+
+            x:x+70,
+
+            collected:false,
+
+            yOffset:70
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resizeCanvas(){
+
+    canvas.width =
+    canvas.clientWidth;
+
+    canvas.height =
+    canvas.clientHeight;
+
+    if(!gameStarted){
+
+        player.y =
+        canvas.height - 100;
+
+    }
+
+}
+
+
+window.addEventListener(
+'resize',
+resizeCanvas
+);
+
+resizeCanvas();
+
+
+/* =========================================================
+   PLAYER PHYSICS
+========================================================= */
+
+function jumpPlayer(){
+
+    if(
+        player.grounded &&
+        !document
+        .getElementById('questionModal')
+        .classList.contains('hidden')
+    ){
+        return;
+    }
+
+    if(player.grounded){
+
+        player.vy =
+        player.jump;
+
+        player.grounded=false;
+
+        tone(440,0.08,'sine',0.06);
+
+    }
+
+}
+
+
+function updatePlayer(){
+
+    if(!gameStarted || gameFinished){
+        return;
+    }
+
+
+    if(keys.left){
+        player.vx = -player.speed;
+    }
+    else if(keys.right){
+        player.vx = player.speed;
+    }
+    else{
+        player.vx *= 0.75;
+    }
+
+
+    if(keys.jump){
+        jumpPlayer();
+        keys.jump=false;
+    }
+
+
+    player.x += player.vx;
+
+
+    if(player.x < 20){
+        player.x=20;
+    }
+
+    if(player.x > worldWidth-player.width){
+        player.x =
+        worldWidth-player.width;
+    }
+
+
+    player.vy += player.gravity;
+
+    player.y += player.vy;
+
+
+    const ground =
+    canvas.height - 75;
+
+
+    if(
+        player.y +
+        player.height >= ground
+    ){
+
+        player.y =
+        ground-player.height;
+
+        player.vy=0;
+
+        player.grounded=true;
+
+    }
+    else{
+
+        player.grounded=false;
+
+    }
+
+
+    cameraX =
+    player.x -
+    canvas.width*0.35;
+
+
+    if(cameraX<0){
+        cameraX=0;
+    }
+
+    const maxCamera =
+    worldWidth-canvas.width;
+
+    if(cameraX>maxCamera){
+        cameraX=maxCamera;
+    }
+
+
+    checkStars();
+
+    checkObstacles();
+
+    checkTrophy();
+
+}
+
+
+/* =========================================================
+   COLLISION
+========================================================= */
+
+function playerHitsObstacle(o){
+
+    return (
+
+        player.x < o.x + o.width &&
+
+        player.x + player.width > o.x &&
+
+        player.y < canvas.height - 75 &&
+
+        player.y + player.height >
+        canvas.height - 75 - o.height
+
+    );
+
+}
+
+
+/* =========================================================
+   OBSTACLE QUESTIONS
+========================================================= */
+
+function checkObstacles(){
+
+    for(let i=0;i<obstacles.length;i++){
+
+        const obstacle =
+        obstacles[i];
+
+
+        if(
+            !obstacle.solved &&
+            playerHitsObstacle(obstacle)
+        ){
+
+            player.x =
+            obstacle.x -
+            player.width -
+            5;
+
+            player.vx=0;
+
+            openQuestion(i);
+
+            break;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN QUESTION
+========================================================= */
+
+function openQuestion(index){
+
+    if(
+        document
+        .getElementById('questionModal')
+        .classList
+        .contains('hidden') === false
+    ){
+        return;
+    }
+
+
+    currentQuestion=index;
+
+    currentAnswer="";
+
+    updateAnswerDisplay();
+
+
+    const q =
+    questions[index];
+
+
+    document.getElementById(
+        'questionText'
+    ).textContent =
+    `${q.a} × ${q.b} = ?`;
+
+
+    document
+    .getElementById('questionModal')
+    .classList
+    .remove('hidden');
+
+
+    setTimeout(()=>{
+
+        document
+        .getElementById('questionBox')
+        .classList
+        .remove('shake');
+
+    },400);
+
+}
+
+
+/* =========================================================
+   KEYPAD
+========================================================= */
+
+function addNumber(number){
+
+    if(currentAnswer.length>=3){
+        return;
+    }
+
+    currentAnswer += number;
+
+    updateAnswerDisplay();
+
+    tone(500,0.04,'sine',0.03);
+
+}
+
+
+function clearAnswer(){
+
+    currentAnswer="";
+
+    updateAnswerDisplay();
+
+}
+
+
+function updateAnswerDisplay(){
+
+    document.getElementById(
+        'answerDisplay'
+    ).textContent =
+    currentAnswer || " ";
+
+}
+
+
+/* =========================================================
+   CHECK ANSWER
+========================================================= */
+
+function checkAnswer(){
+
+    if(currentAnswer===""){
+        return;
+    }
+
+
+    const q =
+    questions[currentQuestion];
+
+
+    const correct =
+    q.a*q.b;
+
+
+    if(
+        Number(currentAnswer) === correct
+    ){
+
+        obstacles[currentQuestion]
+        .solved=true;
+
+
+        score++;
+
+        correctSound();
+
+
+        currentAnswer="";
+
+
+        document
+        .getElementById('questionModal')
+        .classList
+        .add('hidden');
+
+
+        document.getElementById(
+            'questionDisplay'
+        ).textContent =
+        score;
+
+
+        player.x =
+        obstacles[currentQuestion].x + 60;
+
+
+        if(score>=TOTAL){
+
+            setTimeout(
+                finishGame,
+                500
+            );
+
+        }
+
+    }
+    else{
+
+        wrongSound();
+
+        const box =
+        document.getElementById(
+            'questionBox'
+        );
+
+        box.classList.remove('shake');
+
+        void box.offsetWidth;
+
+        box.classList.add('shake');
+
+        currentAnswer="";
+
+        updateAnswerDisplay();
+
+    }
+
+}
+
+
+/* =========================================================
+   STARS
+========================================================= */
+
+function checkStars(){
+
+    const ground =
+    canvas.height - 75;
+
+
+    stars.forEach(star=>{
+
+        if(star.collected){
+            return;
+        }
+
+
+        const starY =
+        ground -
+        star.yOffset;
+
+
+        const dx =
+        Math.abs(
+            player.x -
+            star.x
+        );
+
+
+        const dy =
+        Math.abs(
+            player.y -
+            starY
+        );
+
+
+        if(
+            dx<45 &&
+            dy<60
+        ){
+
+            star.collected=true;
+
+            starsCollected++;
+
+            document.getElementById(
+                'starsDisplay'
+            ).textContent =
+            starsCollected;
+
+            starSound();
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   TROPHY
+========================================================= */
+
+function checkTrophy(){
+
+    if(score<TOTAL){
+        return;
+    }
+
+
+    if(
+        player.x >
+        worldWidth-350
+    ){
+
+        finishGame();
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW SKY
+========================================================= */
+
+function drawSky(){
+
+    const w=canvas.width;
+    const h=canvas.height;
+
+
+    ctx.fillStyle='#38bdf8';
+
+    ctx.fillRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    /* clouds */
+
+    ctx.fillStyle='rgba(255,255,255,.8)';
+
+
+    for(let i=0;i<8;i++){
+
+        const x =
+        ((i*350-cameraX*0.15)
+        % (w+250))-100;
+
+        const y =
+        70+(i%3)*55;
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            25,
+            0,
+            Math.PI*2
+        );
+
+        ctx.arc(
+            x+30,
+            y-10,
+            35,
+            0,
+            Math.PI*2
+        );
+
+        ctx.arc(
+            x+65,
+            y,
+            25,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW GROUND
+========================================================= */
+
+function drawGround(){
+
+    const ground =
+    canvas.height-75;
+
+
+    ctx.fillStyle='#4ade80';
+
+    ctx.fillRect(
+        0,
+        ground,
+        canvas.width,
+        75
+    );
+
+
+    ctx.fillStyle='#166534';
+
+
+    for(
+        let x=-cameraX%40;
+        x<canvas.width;
+        x+=40
+    ){
+
+        ctx.fillRect(
+            x,
+            ground,
+            22,
+            8
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW OBSTACLES
+========================================================= */
+
+function drawObstacles(){
+
+    const ground =
+    canvas.height-75;
+
+
+    obstacles.forEach(
+    (o,index)=>{
+
+        const x =
+        o.x-cameraX;
+
+
+        if(
+            x<-100 ||
+            x>canvas.width+100
+        ){
+            return;
+        }
+
+
+        ctx.fillStyle =
+        o.solved
+        ? '#22c55e'
+        : '#ef4444';
+
+
+        ctx.fillRect(
+            x,
+            ground-o.height,
+            o.width,
+            o.height
+        );
+
+
+        ctx.fillStyle='#f8fafc';
+
+        ctx.font='bold 20px Tajawal';
+
+        ctx.textAlign='center';
+
+        ctx.fillText(
+            o.solved ? '✓' : '!',
+            x+o.width/2,
+            ground-o.height/2+8
+        );
+
+
+        ctx.font='bold 12px Tajawal';
+
+        ctx.fillText(
+            o.solved
+            ? 'تم'
+            : `سؤال ${index+1}`,
+            x+o.width/2,
+            ground-o.height-8
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   DRAW STARS
+========================================================= */
+
+function drawStars(){
+
+    const ground =
+    canvas.height-75;
+
+
+    stars.forEach(star=>{
+
+        if(star.collected){
+            return;
+        }
+
+
+        const x =
+        star.x-cameraX;
+
+        const y =
+        ground-star.yOffset;
+
+
+        if(
+            x<-50 ||
+            x>canvas.width+50
+        ){
+            return;
+        }
+
+
+        ctx.font='28px Arial';
+
+        ctx.textAlign='center';
+
+        ctx.fillText(
+            '⭐',
+            x,
+            y
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   DRAW PLAYER
+========================================================= */
+
+function drawPlayer(){
+
+    const x =
+    player.x-cameraX;
+
+    const y =
+    player.y;
+
+
+    /* body */
+
+    ctx.fillStyle='#f59e0b';
+
+    ctx.fillRect(
+        x,
+        y+16,
+        player.width,
+        player.height-16
+    );
+
+
+    /* head */
+
+    ctx.fillStyle='#fde68a';
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+player.width/2,
+        y+12,
+        15,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* hair */
+
+    ctx.fillStyle='#451a03';
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+player.width/2,
+        y+7,
+        15,
+        Math.PI,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* eyes */
+
+    ctx.fillStyle='#111827';
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+13,
+        y+11,
+        2,
+        0,
+        Math.PI*2
+    );
+
+    ctx.arc(
+        x+25,
+        y+11,
+        2,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* legs */
+
+    ctx.fillStyle='#1e3a8a';
+
+    ctx.fillRect(
+        x+5,
+        y+45,
+        10,
+        8
+    );
+
+    ctx.fillRect(
+        x+23,
+        y+45,
+        10,
+        8
+    );
+
+}
+
+
+/* =========================================================
+   DRAW TROPHY
+========================================================= */
+
+function drawTrophy(){
+
+    const ground =
+    canvas.height-75;
+
+
+    const x =
+    worldWidth-180-cameraX;
+
+
+    if(
+        x<-100 ||
+        x>canvas.width+100
+    ){
+        return;
+    }
+
+
+    ctx.font='65px Arial';
+
+    ctx.textAlign='center';
+
+    ctx.fillText(
+        '🏆',
+        x,
+        ground-30
+    );
+
+
+    ctx.font='bold 15px Tajawal';
+
+    ctx.fillStyle='#fef3c7';
+
+    ctx.fillText(
+        'النهاية',
+        x,
+        ground-85
+    );
+
+}
+
+
+/* =========================================================
+   DRAW PROGRESS
+========================================================= */
+
+function drawProgress(){
+
+    const width=180;
+
+    const height=12;
+
+    const x=
+    canvas.width/2-width/2;
+
+    const y=18;
+
+
+    ctx.fillStyle='rgba(15,23,42,.7)';
+
+    ctx.roundRect(
+        x,
+        y,
+        width,
+        height,
+        8
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle='#fbbf24';
+
+    ctx.roundRect(
+        x,
+        y,
+        width*(score/TOTAL),
+        height,
+        8
+    );
+
+    ctx.fill();
+
+
+    ctx.font='bold 11px Tajawal';
+
+    ctx.fillStyle='#fff';
+
+    ctx.textAlign='center';
+
+    ctx.fillText(
+        `${score} / ${TOTAL}`,
+        canvas.width/2,
+        y+10
+    );
+
+}
+
+
+/* =========================================================
+   MAIN DRAW
+========================================================= */
+
+function draw(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    drawSky();
+
+    drawGround();
+
+    drawStars();
+
+    drawObstacles();
+
+    drawTrophy();
+
+    drawPlayer();
+
+    drawProgress();
+
+}
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+function gameLoop(){
+
+    updatePlayer();
+
+    draw();
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+
+gameLoop();
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+document
+.getElementById('startButton')
+.addEventListener(
+'click',
+function(){
+
+    initAudio();
+
+    const input =
+    document.getElementById(
+        'nameInput'
+    );
+
+
+    playerName =
+    input.value.trim() ||
+    'البطل/ة';
+
+
+    document.getElementById(
+        'playerDisplay'
+    ).textContent =
+    playerName;
+
+
+    gameStarted=true;
+
+    gameFinished=false;
+
+    score=0;
+
+    starsCollected=0;
+
+    currentQuestion=0;
+
+    cameraX=0;
+
+
+    document.getElementById(
+        'questionDisplay'
+    ).textContent='0';
+
+
+    document.getElementById(
+        'starsDisplay'
+    ).textContent='0';
+
+
+    createWorld();
+
+
+    player.x=120;
+
+    player.vx=0;
+
+    player.vy=0;
+
+    player.y=
+    canvas.height-150;
+
+
+    document
+    .getElementById('startScreen')
+    .classList.add('hidden');
+
+});
+
+
+/* =========================================================
+   VICTORY
+========================================================= */
+
+function finishGame(){
+
+    if(gameFinished){
+        return;
+    }
+
+
+    gameFinished=true;
+
+    score=TOTAL;
+
+
+    document.getElementById(
+        'finalName'
+    ).textContent =
+    playerName;
+
+
+    document.getElementById(
+        'finalScore'
+    ).textContent =
+    score;
+
+
+    document.getElementById(
+        'finalStars'
+    ).textContent =
+    starsCollected;
+
+
+    document
+    .getElementById('victoryModal')
+    .classList
+    .remove('hidden');
+
+
+    victorySound();
+
+    createConfetti();
+
+}
+
+
+/* =========================================================
+   CONFETTI
+========================================================= */
+
+function createConfetti(){
+
+    const container =
+    document.getElementById(
+        'gameContainer'
+    );
+
+
+    for(let i=0;i<80;i++){
+
+        const piece =
+        document.createElement('div');
+
+
+        piece.className='confetti';
+
+
+        piece.style.left =
+        Math.random()*100+'%';
+
+
+        piece.style.animationDelay =
+        Math.random()*1.5+'s';
+
+
+        piece.style.background =
+        [
+            '#fbbf24',
+            '#22c55e',
+            '#38bdf8',
+            '#f43f5e',
+            '#a855f7',
+            '#fb923c'
+        ][
+            Math.floor(
+                Math.random()*6
+            )
+        ];
+
+
+        piece.style.transform =
+        `rotate(${Math.random()*360}deg)`;
+
+
+        container.appendChild(
+            piece
+        );
+
+
+        setTimeout(
+            ()=>{
+                piece.remove();
+            },
+            4500
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+function restartGame(){
+
+    document
+    .getElementById('victoryModal')
+    .classList
+    .add('hidden');
+
+
+    document
+    .getElementById('startScreen')
+    .classList
+    .remove('hidden');
+
+
+    gameStarted=false;
+
+    gameFinished=false;
+
+}
+
+
+/* =========================================================
+   SOUND BUTTON
+========================================================= */
+
+document
+.getElementById('soundButton')
+.addEventListener(
+'click',
+function(){
+
+    soundEnabled =
+    !soundEnabled;
+
+
+    this.textContent =
+    soundEnabled
+    ? '🔊'
+    : '🔇';
+
+});
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+document
+.getElementById('nameInput')
+.addEventListener(
+'keydown',
+function(e){
+
+    if(e.key==='Enter'){
+
+        document
+        .getElementById('startButton')
+        .click();
+
+    }
+
+});
+
+
+/* =========================================================
+   INITIAL WORLD
+========================================================= */
+
+createWorld();
+
+</script>
+
+</body>
+</html>
